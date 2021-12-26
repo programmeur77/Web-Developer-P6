@@ -19,6 +19,11 @@
   "devDependencies": {
     "express": "^4.17.2",
     "mongoose": "^6.1.3",
+    "mongoose-unique-validator": "^3.0.0",
     "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "bcrypt-nodejs": "^0.0.3",
+    "express-router": "^0.0.1"
   }
 }
