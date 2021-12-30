@@ -2,8 +2,9 @@ const fs = require('fs');
 
 const { restartDelay } = require('concurrently/src/defaults');
 const { json } = require('express');
-const Sauce = require('./../models/Sauce');
 const { error } = require('console');
+
+const Sauce = require('./../models/Sauce');
 
 exports.postOneSauce = (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce);
@@ -37,7 +38,52 @@ exports.getOneSauce = (req, res, next) => {
     .catch((error) => res.status(404).json({ message: 'Sauce not found' }));
 };
 
+exports.likeSauce = (req, res, next) => {
+  if (req.body.like === 1) {
+    Sauce.findOneAndUpdate(
+      { _id: req.params.id },
+      { $inc: { likes: 1 }, $addToSet: { usersLiked: req.body.userId } }
+    )
+      .then(() => res.status(200).json({ message: 'Sauce liked' }))
+      .catch((error) => res.status(500).json({ error }));
+  } else if (req.body.like === -1) {
+    Sauce.findOneAndUpdate(
+      { _id: req.params.id },
+      { $inc: { dislikes: 1 }, $addToSet: { usersDisliked: req.body.userId } }
+    )
+      .then(() => res.status(200).json({ message: 'Sauce updated' }))
+      .catch((error) => res.status(500).json({ error }));
+  } else {
+    Sauce.findOne({ _id: req.params.id })
+      .then((sauce) => {
+        if (sauce.usersLiked.find((element) => element == req.body.userId)) {
+          Sauce.updateOne(
+            { _id: req.params.id },
+            {
+              $inc: { likes: -1 },
+              $pull: { usersLiked: req.body.userId }
+            }
+          )
+            .then(() => res.status(200).json({ message: 'Like cancelled !' }))
+            .catch((error) => res.status(500).json({ error }));
+        } else {
+          Sauce.updateOne(
+            { _id: req.params.id, usersDisliked: req.body.userId },
+            {
+              $inc: { dislikes: -1 },
+              $pull: { usersDisliked: req.body.userId }
+            }
+          )
+            .then(() => res.status(200).json({ message: 'Dislike cancelled' }))
+            .catch((error) => res.status(500).json({ error }));
+        }
+      })
+      .catch((error) => res.status(404).json({ message: 'Sauce not found !' }));
+  }
+};
+
 exports.modifySauce = (req, res, next) => {
+  console.log(req.body.userId);
   let sauce = req.file;
   if (sauce) {
     sauce = {
