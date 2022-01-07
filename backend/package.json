@@ -26,6 +26,8 @@
   },
   "dependencies": {
     "bcrypt-nodejs": "^0.0.3",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^10.0.0",
     "express-router": "^0.0.1"
   }
 }
