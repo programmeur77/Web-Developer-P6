@@ -1,9 +1,5 @@
 const fs = require('fs');
 
-const { restartDelay } = require('concurrently/src/defaults');
-const { json } = require('express');
-const { error } = require('console');
-
 const Sauce = require('./../models/Sauce');
 
 exports.postOneSauce = (req, res, next) => {
@@ -83,7 +79,6 @@ exports.likeSauce = (req, res, next) => {
 };
 
 exports.modifySauce = (req, res, next) => {
-  console.log(req.body.userId);
   let sauce = req.file;
   if (sauce) {
     sauce = {
